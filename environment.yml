@@ -1,0 +1,10 @@
+name: laby-jupyter
+
+channels:
+- QuantStack
+- conda-forge
+
+dependencies:
+- xeus-cling
+- notebook
+- xwidgets
