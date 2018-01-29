@@ -8,3 +8,5 @@ dependencies:
 - xeus-cling
 - notebook
 - xwidgets
+#xwidgets failed to install (25/01/2018), try later
+

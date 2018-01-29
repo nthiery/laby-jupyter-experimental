@@ -2,11 +2,11 @@
 
 ## Project setup
 
-- [ ] Learn git's and github's basics.
+- [x] Learn git's and github's basics.
       E.g. from https://try.github.io/ or https://git-scm.com/docs/gittutorial
-- [ ] Create an account on GitHub and tell Nicolas to add you to the project
-- [ ] Clone this repository
-- [ ] Import artwork from laby's repo https://github.com/sgimenez/laby/
+- [x] Create an account on GitHub and tell Nicolas to add you to the project
+- [x] Clone this repository
+- [x] Import artwork from laby's repo https://github.com/sgimenez/laby/
 - [ ] Learn about using ssh keys to not have to type in your
       login/pass each time you push
 - [ ] Install the required dependencies by creating a conda environment.
