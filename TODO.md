@@ -19,7 +19,7 @@
 ## Experiment with widgets
 
 - [x] Create a slider
-- [ ] Create a widget displaying an image
+- [x] Create a widget displaying an image
 - [ ] Create a widget displaying a grid of images, each being a separate widget
 - [ ] Display one of laby's maze using the above
 
