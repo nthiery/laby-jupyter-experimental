@@ -1,0 +1,18 @@
+basic:
+forward,
+left,
+right,
+escape.
+
+rocks:
+take,
+drop.
+
+loop:
+go :- look(void) -> (...), go; true.
+
+function:
+f(X) :- (...).
+
+conditional:
+look(rock) -> (...); (...).

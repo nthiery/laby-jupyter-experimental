@@ -1,0 +1,114 @@
+#!/bin/bash
+
+cd $(dirname $0)
+
+[ -f project.conf ] && source project.conf
+source build.conf || exit 1
+
+export PREFIX=${PREFIX-/usr}
+export DATADIR=${DATADIR-${PREFIX}/share}
+export TMPDIR=${TMPDIR-/tmp}
+
+export PROJECT_NAME=${PROJECT_NAME-unknown}
+export PROJECT_VERSION=${PROJECT_VERSION-unknown}
+
+export OCAMLFIND=${OCAMLFIND-ocamlfind}
+export OCAMLBUILD=${OCAMLBUID-ocamlbuild}
+
+export OCAML_VERSION=$($OCAMLFIND ocamlc -version)
+ocaml_config () {
+  ${OCAMLFIND} ocamlc -config | sed -n 's/^'"$1"': //p' | tr -c -d '[:alnum:]'
+}
+export OCAML_SYSTEM=$(ocaml_config system)
+export OCAML_ARCH=$(ocaml_config architecture)
+
+SYSARCH="${OCAML_SYSTEM}-${OCAML_ARCH}"
+BUILDDIR="_build-${SYSARCH}"
+
+[ -n "${OCAML_VERSION}" -a -n "${SYSARCH}" ] || \
+  { echo "Error: compilation requires OCaml compilers and ocamlfind"; exit 1; }
+
+export PKG_VERSION="${OCAMLFIND} query -format %v"
+
+[ -n "${THREADS}" ] && OCBF="${OCBF} -tag thread"
+[ -n "${TAGS}" ] && OCBF="${OCBF} -tags ${TAGS}"
+[ -n "${TAGLINE}" ] && OCBF="${OCBF} -tag-line ${TAGLINE}"
+[ -n "${JOBS}" ] && OCBF="${OCBF} -j ${JOBS}"
+
+OCBF="${OCBF} -use-ocamlfind -pkgs $PACKAGES -libs $LIBRARIES -Is $SRCDIRS"
+
+OCBI="${OCAMLBUILD} -no-sanitize -no-hygiene -build-dir ${BUILDDIR} ${OCBF}"
+
+ACT="${1---all}"
+shift
+[ $# == 0 ] && set ${BINS} ${LIBS}
+
+BINTARGETS=""
+LIBTARGETS=""
+for i in "$@"; do
+  for k in ${BINS}; do [ "$k" == "$i" ] && BINTARGETS="${BINTARGETS} $i"; done
+  for k in ${LIBS}; do [ "$k" == "$i" ] && LIBTARGETS="${LIBTARGETS} $i"; done
+done
+
+tclean () {
+      for i in ${AUXTARGETS}; do rm -rf "$i"; done
+      for i in ${BINTARGETS}; do rm -rf "$(basename $i)"; done
+      for i in ${LIBTARGETS}; do
+	  for j in cma cmxa d.cma p.cmxa; do rm -rf "$(basename $i).$j"; done
+      done
+}
+
+case ${ACT} in
+  --help|-h)
+      echo "usage: $0 action [targets]"
+      echo "options:"
+      echo "  --all (-a)"
+      echo "  --byte (-b)"
+      echo "  --native (-n)"
+      echo "  --byte-debug (-bd)"
+      echo "  --native-profile (-np)"
+      echo "  --clean (-c)"
+      exit 0;;
+  --clean|-c)
+      ${OCBI} -clean
+      [ -f "${CONF}.sh" ] && rm -rf "${CONF}.ml"
+      tclean
+      exit 0;;
+  --target|-t)
+      ${OCBI} "$@"
+      exit 0;;
+  --all|-a) LNK="native"; BINEXT="native byte"; LIBEXT="cmxa cma";;
+  --byte|-b) LNK="byte"; BINEXT="byte"; LIBEXT="cma";;
+  --byte-debug|-bd) LNK="d.byte"; BINEXT="d.byte"; LIBEXT="d.cma";;
+  --native|-n) LNK="native"; BINEXT="native"; LIBEXT="cmxa";;
+  --native-profile|-np) LNK="p.native"; BINEXT="p.native"; LIBEXT="p.cmxa";;
+  *) echo "unknown action"; exit 1;;
+esac
+
+TARGETS=""
+for i in ${BINTARGETS}; do
+  for j in ${BINEXT}; do TARGETS="${TARGETS} $i.$j"; done
+done
+for i in ${LIBTARGETS}; do
+  for j in ${LIBEXT}; do TARGETS="${TARGETS} $i.$j"; done
+done
+
+echo Building "${PROJECT_NAME}-${PROJECT_VERSION} for ${SYSARCH}"
+export THREADS
+[ -f "${CONF}.sh" ] && sh "${CONF}.sh" > "${CONF}.ml"
+
+tclean
+
+${OCBI} ${TARGETS} ${AUXTARGETS} || exit 1
+
+# linking
+
+[ -n "${LNK}" ] &&
+for i in ${BINTARGETS}; do cp "${BUILDDIR}/${i}.${LNK}" "$(basename $i)"; done
+
+for i in ${LIBTARGETS}; do
+  for j in ${LIBEXT}; do cp "${BUILDDIR}/$i.$j" "$(basename $i.$j)"; done
+done
+
+exit 0
+
