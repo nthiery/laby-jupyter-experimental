@@ -1,0 +1,28 @@
+conda update conda
+conda install notebook -c conda-forge
+conda install xeus-cling -c QuantStack
+
+
+Dans outils natifs x64 de VS2015 :
+vcvarsall.bat amd64
+
+
+Ce que j'ai installé :
+
+Programming Languages
+	Visual C++
+			Common Tools for Visual C++ 2015
+			Microsoft Foundation Classes for C++
+			Windows XP Support for C++
+Windows and Web Development
+	Microsoft Web Developer Tools
+	Universal Windows App Development Tools
+		Tools (1.4.1) and Windows 10 SDK (10.0.14393)
+		Windows 10 SDK (10.0.10586)
+Common Tools
+	[Git for Windows] Already found on the system.
+	GitHub Extension for Visual Studio
+
+
+Fichier exécutable trouvé sur :
+http://download.cnet.com/Visual-Studio-Community-2015/3000-2212_4-76440611.html
