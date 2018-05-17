@@ -13,17 +13,28 @@
       Thanks to the environment.xml file is this project, you can just do:
 
         conda env create
+        source activate laby-jupyter
+
+      To recreate the environment (e.g. for a full update):
+
+        conda activate base
+        conda env remove -n laby-jupyter
+        conda env create
 
 - [ ] Update the file environment.xml as appropriate
+- [ ] Decide about the license (GPL v3 for now, as for laby)
 
 ## Experiment with widgets
 
 - [x] Create a slider
 - [x] Create a widget displaying an image
+- [x] Create a widget displaying a grid of images
 - [ ] Create a widget displaying a grid of images, each being a separate widget
 - [ ] Display one of laby's maze using the above
 
 ## Implement the model
+
+Voir aussi file:NextStep.ipynb
 
 - [ ] Define a type Cell (e.g. using an enum) to represent the content
       of a cell: Rock, Web, AntLeft, AntRight, ...
@@ -113,3 +124,4 @@ trickier.
 
 - [ ] Write a collection of notebooks, one for each level
 - [ ] Generate the notebooks automatically?
+- [ ] Publish on binder
