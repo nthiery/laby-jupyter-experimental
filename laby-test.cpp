@@ -248,8 +248,7 @@ void testLabyApp() {
 }
 
 void testLoad() {
-    Labyrinth l;
-    l.load("data/levels/0.laby");
+    auto l = Labyrinth::load(LABY_DATADIR + "/levels/0.laby");
     ASSERTEQ(l.to_string(),
            u8"o o o o o o\n"
            u8"o w . . . x\n"
@@ -257,6 +256,8 @@ void testLoad() {
            u8"o . . . . o\n"
            u8"o . ↑ . r o\n"
            u8"o o o o o o\n");
+    auto l2 = Labyrinth::load_level("0");
+    ASSERTEQ(l.to_string(), l2.to_string());
 }
 
 void testHtml() {
@@ -328,11 +329,21 @@ void testRun() {
     ASSERTEQ(app.player.time, 5);
 }
 
+void testBaseDir() {
+    // This test assumes the test are run in the source directory
+    ASSERTEQ(LABY_BASEDIR, "");
+    ASSERTEQ(LABY_DATADIR, "data");
+    // std::cout << "base directory: " << __basedir__ << std::endl;
+    // std::cout << "data directory: " << __datadir__ << std::endl;
+}
+
+
 int main() {
     testLabyrinth();
     testLabyrinthValueSemantic();
     testLabyApp();
     testLoad();
     testHtml();
-    testRun();
+    //testRun();
+    testBaseDir();
 }

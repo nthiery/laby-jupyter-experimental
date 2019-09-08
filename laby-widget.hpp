@@ -155,10 +155,8 @@ class LabySVGViewPlayerApp: public LabyBaseApp<LabyrinthSVGView> {
     }
 };
 
-auto laby_level(std::string s) {
-    Labyrinth level;
-    level.load(std::string("data/levels/")+s+".laby");
-    auto app = new LabySVGViewPlayerApp(level);
+auto laby_level(std::string level) {
+    auto app = new LabySVGViewPlayerApp(Labyrinth::load_level(level));
     app->player.run();
     app->display();
     return app;

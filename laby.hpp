@@ -8,6 +8,12 @@
 #include <string>
 #include "timer.hpp"
 
+const std::string LABY_FILE = __FILE__;
+const std::string LABY_BASENAME = "laby.hpp";
+const std::string LABY_BASEDIR = LABY_FILE.substr(0, LABY_FILE.length()- LABY_BASENAME.length());
+const std::string LABY_DATADIR = LABY_BASEDIR+"data";
+
+
 std::string utf8_substr(const std::string& str, unsigned int start, size_t leng)
 {
     if (leng==0) { return ""; }
@@ -113,12 +119,24 @@ class Labyrinth {
     Tile carry = Void;
     std::string message;
     public:
+
+    //////////////////////////////////////////////////////////////////////////
+    // Constructors
     Labyrinth() {
     }
+
     Labyrinth(std::string s) {
         from_string(s);
     }
-    void load(std::string file) {
+
+    static
+    Labyrinth load_level(std::string level) {
+        // TODO: Should use the analogue of os.path
+        return load(LABY_DATADIR+"/levels/"+level+".laby");
+    }
+
+    static
+    Labyrinth load(std::string file) {
         std::ifstream fd;
         fd.open(file);
         if ( not fd )
@@ -131,9 +149,12 @@ class Labyrinth {
             s += line + "\n";
             getline(fd, line);
         }
-        from_string(s);
         fd.close();
+        Labyrinth l;
+        l.from_string(s);
+        return l;
     }
+
     void from_string(std::string s) {
         board = Board();
         std::stringstream fd(s);
@@ -176,7 +197,7 @@ class Labyrinth {
         for ( auto line: view() ) {
             s += "    <tr>\n";
             for (int j=0; j<line.size(); j++ ) {
-                s += "        <td><img src='data/tiles/"+tilenames[line[j]]+".svg'></td>\n";
+                s += "        <td><img src='"+LABY_DATADIR+"/tiles/"+tilenames[line[j]]+".svg'></td>\n";
             }
             s += "    </tr>\n";
         }
